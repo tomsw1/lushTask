@@ -11,6 +11,8 @@ builder.prismaObject('Task', {
   }),
 })
 
+//Queries
+
 builder.queryField('task', (t) =>
   t.prismaField({
     type: 'Task',
@@ -26,6 +28,31 @@ builder.queryField('task', (t) =>
     }
   })
 )
+
+builder.queryField('tasks', (t) =>
+  t.prismaField({
+    type: ['Task'],
+    args: {
+      search: t.arg.string()
+    },
+    nullable: true,
+    resolve: (query, parent, args) => {
+      
+      const whereClause = args.search
+        ? { title: { contains: args.search } }
+        : {}
+
+      return prisma.task.findMany({
+        ...query,
+        where: {
+          ...whereClause
+        }
+      })
+    }
+  })
+)
+
+//Mutations
 
 builder.mutationField('addTask', (t) =>
   t.prismaField({
