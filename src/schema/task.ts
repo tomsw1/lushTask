@@ -94,3 +94,26 @@ builder.mutationField('toggleTask', (t) =>
     }
   })
 )
+
+builder.mutationField('deleteTask', (t) =>
+  t.prismaField({
+    type: 'Task',
+    args: {
+      id: t.arg.int({ required: true }),
+    },
+    resolve: async (query, _parent, args, _context) => {
+      const taskToDelete = await prisma.task.findUnique({
+        where: { id: args.id}
+      })
+
+      if (!taskToDelete){
+        return null;
+      }
+
+      return prisma.task.delete({
+        ...query,
+        where: { id: args.id },
+      })
+    }
+  })
+)
