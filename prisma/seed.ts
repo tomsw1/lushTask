@@ -14,13 +14,13 @@ const taskData = [
 async function main() {
   console.log(`Start seeding ...`)
   for (const t of taskData) {
-    const user = await prisma.task.create({
+    const createdTask = await prisma.task.create({
       data: {
           title: t.title,
           completed: t.completed
         }
     })
-    console.log(`Created user with id: ${user.id}`)
+    console.log(`Created task with id: ${createdTask.id}`)
   }
   console.log(`Seeding finished.`)
 }
