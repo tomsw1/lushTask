@@ -69,3 +69,28 @@ builder.mutationField('addTask', (t) =>
       })
   })
 )
+
+builder.mutationField('toggleTask', (t) =>
+  t.prismaField({
+    type: 'Task',
+    args: {
+      id: t.arg.int({ required: true }),
+    },
+    resolve: async (query, _parent, args, _context) => {
+      const taskToggled = await prisma.task.findUnique({
+        where: { id: args.id},
+        select: { completed: true }
+      })
+
+      if (!taskToggled){
+        return taskToggled;
+      }
+      
+      return prisma.task.update({
+        ...query,
+        where: { id: args.id},
+        data: {completed: !taskToggled.completed}
+      })
+    }
+  })
+)
